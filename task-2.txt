@@ -1,6 +1,6 @@
 Öğrenci No:250541082
 AD-SOYAD:Zehra ÖZDEMİR 
-Kaynak: Gemini yardımı ile hazırlanmıştır
+Kaynak: Gemini yardımı ile hazırlanmıştır.
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
 FUNCTION EnIyiHamleSec(OyunDurumu):
     
