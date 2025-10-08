@@ -1,4 +1,75 @@
-Öğrenci No:
-AD-SOYAD:
-
+Öğrenci No:250541082
+AD-SOYAD:Zehra ÖZDEMİR
+Kaynak:Gemini'den yardım alınarak hazırlanmıştır.
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+
+FUNCTION OptimumAlisverisBul(BUTCE_MAX, IHTIYAC_LISTESI, MARKET_DB):
+    
+    // Çıktı değişkenleri
+    SEPET_NIHAI = YENI_LISTE()
+    TOPLAM_MALIYET = 0.0
+
+    // -----------------------------------------------------------
+    // ADIM 1: Veri Ön İşleme (Birim Maliyeti Normalize Etme)
+    // -----------------------------------------------------------
+    FOREACH kayit IN MARKET_DB:
+        kayit.birim_maliyet = kayit.birim_fiyat * (1 - kayit.indirim_orani)
+    
+    // -----------------------------------------------------------
+    // ADIM 2: Açgözlü Seçim (Greedy Choice)
+    //         Her ürün için en ucuz marketi seç.
+    // -----------------------------------------------------------
+    FOREACH ihtiyac IN IHTIYAC_LISTESI:
+        
+        // Ürüne ait tüm market kayıtlarını filtrele
+        ADAY_KAYITLAR = FILTRELE(MARKET_DB, urun_adi == ihtiyac.isim)
+        
+        IF ADAY_KAYITLAR.BOYUT == 0:
+            YAZDIR("UYARI: " + ihtiyac.isim + " için fiyat bulunamadı.")
+            CONTINUE
+        
+        // En düşük birim maliyetli kaydı bul
+        SECILEN_KAYIT = EN_AZ(ADAY_KAYITLAR, kriter: birim_maliyet)
+        
+        // Sepete ekle ve maliyeti güncelle
+        MALIYET = SECILEN_KAYIT.birim_maliyet * ihtiyac.miktar
+        
+        YENI_URUN = YENI AlinanUrun(
+            urun_adi: SECILEN_KAYIT.urun_adi,
+            market_adi: SECILEN_KAYIT.market_adi,
+            maliyet: MALIYET,
+            oncelik: ihtiyac.oncelik
+        )
+        
+        SEPET_NIHAI.EKLE(YENI_URUN)
+        TOPLAM_MALIYET += MALIYET
+    
+    // -----------------------------------------------------------
+    // ADIM 3: Bütçe Kısıtlamasını Kontrol Etme (Geri İzleme/Düzeltme)
+    // -----------------------------------------------------------
+    
+    // Sepeti, öncelik 2'den (Lüks) başlayarak ve aynı öncelik içinde en pahalıyı önceleyerek sırala.
+    SIRALA(SEPET_NIHAI, anahtar: oncelik ASC, maliyet DESC)
+
+    WHILE TOPLAM_MALIYET > BUTCE_MAX AND SEPET_NIHAI.BOYUT > 0:
+        
+        // Listenin başındaki ürün (en lüks VE en pahalı) çıkarılacak adaydır
+        CIKARILACAK_URUN = SEPET_NIHAI.ILK_ELEMANI_SIL() 
+        
+        // Maliyeti toplamdan düş
+        TOPLAM_MALIYET -= CIKARILACAK_URUN.maliyet
+        
+        YAZDIR("--- BÜTÇE AŞIMI --- '" + CIKARILACAK_URUN.urun_adi + "' çıkarıldı.")
+        
+        // Eğer çıkarılan ürün Temel (oncelik: 1) ise ve hala bütçe aşılıyorsa, 
+        // bütçenin yetersiz olduğu anlamına gelir.
+        IF CIKARILACAK_URUN.oncelik == 1 AND TOPLAM_MALIYET > BUTCE_MAX:
+             YAZDIR("UYARI: Temel ihtiyaçlar çıkarılmasına rağmen bütçe aşıldı.")
+             BREAK
+
+    // -----------------------------------------------------------
+    // ADIM 4: Sonucu Döndürme
+    // -----------------------------------------------------------
+    RETURN SEPET_NIHAI, TOPLAM_MALIYET
+
+END FUNCTION
