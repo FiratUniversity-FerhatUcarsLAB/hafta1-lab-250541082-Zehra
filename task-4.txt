@@ -1,4 +1,66 @@
-Öğrenci No:
-AD-SOYAD:
-
+Öğrenci No:250541082
+AD-SOYAD:Zehra ÖZDEMİR 
+Kaynak:Gemini'den yardım alınmıştır.
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+FUNCTION EnYakinKomsuRotaBul(DuraklarListesi, BaslangicDuragi):
+    
+    // Çıktı değişkenleri
+    OPTIMAL_ROTA = YENI_LISTE() // Ziyaret sırasını tutar
+    ZIYARET_EDILDI = YENI_SET() // Ziyaret edilen durakları tutar
+    TOPLAM_MALIYET = 0.0
+    
+    // Başlangıç Durumunu Ayarla
+    MEVCUT_DURAK = BaslangicDuragi
+    
+    // Başlangıç durağını rotaya ekle ve ziyaret edildi olarak işaretle
+    OPTIMAL_ROTA.EKLE(MEVCUT_DURAK)
+    ZIYARET_EDILDI.EKLE(MEVCUT_DURAK)
+
+    N = DuraklarListesi.UZUNLUK // Toplam durak sayısı
+    
+    // Döngü: Tüm duraklar ziyaret edilene kadar devam et
+    WHILE ZIYARET_EDILDI.BOYUT < N DO
+        
+        EN_KISA_MESAFE = INFINITY
+        EN_YAKIN_DURAK = NULL
+        
+        // İç Döngü: Tüm duraklar arasında en yakın ziyaret edilmemiş durak aranır.
+        FOREACH ADAY_DURAK IN DuraklarListesi DO
+            
+            // 1. Ziyaret edilmemiş olmalı.
+            IF NOT ZIYARET_EDILDI.ICERIR(ADAY_DURAK) THEN
+                
+                // 2. Mevcut duraktan adaya olan mesafeyi hesapla.
+                GECICI_MESAFE = HesaplaMesafe(MEVCUT_DURAK, ADAY_DURAK)
+                
+                // 3. En kısa mesafeyi güncelle (Greedy Choice)
+                IF GECICI_MESAFE < EN_KISA_MESAFE THEN
+                    EN_KISA_MESAFE = GECICI_MESAFE
+                    EN_YAKIN_DURAK = ADAY_DURAK
+                END IF
+                
+            END IF
+            
+        END FOREACH
+        
+        // Eğer en yakın durak bulunduysa
+        IF EN_YAKIN_DURAK != NULL THEN
+            // Rotayı ve maliyeti güncelle
+            OPTIMAL_ROTA.EKLE(EN_YAKIN_DURAK)
+            ZIYARET_EDILDI.EKLE(EN_YAKIN_DURAK)
+            TOPLAM_MALIYET += EN_KISA_MESAFE
+            
+            // Mevcut konumu yeni durağa taşı
+            MEVCUT_DURAK = EN_YAKIN_DURAK
+        END IF
+        
+    END WHILE
+    
+    // Rotayı tamamlamak için son duraktan başlangıç durağına geri dönüşü ekle.
+    GERI_DONUS_MESAFESI = HesaplaMesafe(MEVCUT_DURAK, BaslangicDuragi)
+    TOPLAM_MALIYET += GERI_DONUS_MESAFESI
+    OPTIMAL_ROTA.EKLE(BaslangicDuragi) 
+    
+    RETURN OPTIMAL_ROTA, TOPLAM_MALIYET
+    
+END FUNCTION
