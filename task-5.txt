@@ -1,4 +1,60 @@
-Öğrenci No:
-AD-SOYAD:
-
+Öğrenci No:250541082
+AD-SOYAD:Zehra ÖZDEMİR 
+Kaynak:Gemini'den yardım alınmıştır.
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+FUNCTION SurekliGelisimDöngüsü(YazilimciDurumu):
+    
+    WHILE YazilimciDurumu.teknik_ustalık < HEDEF_USTALIK DO
+        
+        // -----------------------------------------------------------
+        // AŞAMA 1: PROBLEM ÇÖZME ve UYGULAMA (TEKNİK ÇEKİRDEK)
+        // -----------------------------------------------------------
+        
+        Gorev = EN_ZOR_GOREVİ_SEC(Proje)
+        
+        IF Gorev.durumu == HATA_ICERIYOR VEYA Gorev.kalitesi < STANDART THEN
+            // 1.1. Kalite Odaklı Yaklaşım
+            UYGULA Refaktör(Gorev) // Kodu sadeleştir ve temizle
+            UYGULA TestOdaklıGelişim(Gorev) // Hata riskini azalt
+            YAZILIMCI.teknik_ustalık += 0.1 * Gorev.karmaşıklığı // Karmaşık çözümler puanı artırır
+        ELSE
+            // 1.2. Mimari ve Tasarım
+            SEC TasarımDeseni(Gorev) // En uygun deseni uygula (Factory, Singleton, vb.)
+            YENI_MIMARI_OLUSTUR(Gorev) // Ölçeklenebilir, dayanıklı yapı tasarla
+        END IF
+        
+        // -----------------------------------------------------------
+        // AŞAMA 2: SOSYAL ETKİ ve İLETİŞİM (YAZILIMCI ETKİSİ)
+        // -----------------------------------------------------------
+        
+        IF RASTGELE(0, 10) > 7 THEN
+            // 2.1. Bilgi Paylaşımı ve Mentorluk
+            EGİT(EkipÜyesi, Konu: YazilimciDurumu.uzmanlik_alani)
+            DOKÜMAN_GÜNCELLE(ProjeMimarisi) // Bilgiyi kalıcı hale getir
+            YAZILIMCI.sosyal_etki += 0.2
+        ELSE
+            // 2.2. Geri Bildirim ve İşbirliği
+            YAPICI_GERİBİLDİRİM_VER(Kodİnceleme) // Hata değil, çözüm öner
+            AKTİF_DİNLE(ÜrünYöneticisi) // Teknik değil, iş problemini anla
+        END IF
+
+        // -----------------------------------------------------------
+        // AŞAMA 3: SÜREKLİ ÖĞRENME ve ADAPTASYON (BORÇ ÖDEME)
+        // -----------------------------------------------------------
+        
+        GUNCELLE YazilimciDurumu.borclu_teknoloji // Sektördeki yeni trendleri (AI, yeni Framework) listeye ekle
+        
+        IF YazilimciDurumu.borclu_teknoloji.BOYUT > 0 THEN
+            // 3.1. Pratik Odaklı Öğrenme
+            YENİ_TEKNOLOJİ = EN_ÖNEMLİ_BORÇ(YazilimciDurumu.borclu_teknoloji)
+            KÜÇÜK_PROJE_OLUŞTUR(YENİ_TEKNOLOJİ) // İzlemek yerine bizzat uygula
+            
+            // 3.2. Öğrenme Hızını Değerlendir
+            GECEN_SÜRE = SÜRE_HESAPLA(KÜÇÜK_PROJE)
+            YAZILIMCI.ogrenme_hizi = 1.0 / GECEN_SÜRE // Hız, öğrenilen/süre oranıdır.
+            
+            YAZILIMCI.borclu_teknoloji.SİL(YENİ_TEKNOLOJİ)
+            YAZILIMCI.teknik_ustalık += 0.15 // Öğrenmek önemli bir sıçramadır.
+        END IF
+
+        BEKLE(1 Gün
