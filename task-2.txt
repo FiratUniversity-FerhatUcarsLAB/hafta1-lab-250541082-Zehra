@@ -1,4 +1,90 @@
-Öğrenci No:
-AD-SOYAD:
-
+Öğrenci No:250541082
+AD-SOYAD:Zehra ÖZDEMİR 
+Kaynak: Gemini yardımı ile hazırlanmıştır
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+FUNCTION EnIyiHamleSec(OyunDurumu):
+    
+    // -----------------------------------------------------------
+    // AŞAMA 1: OYUNCU HAREKET ETMEDEN ÖNCEKİ ZORUNLU KARARLAR
+    // -----------------------------------------------------------
+    
+    // 1.1. Hapisten Çıkış Kontrolü (En Yüksek Öncelik)
+    IF OyunDurumu.haps_cezasi > 0:
+        IF OyunDurumu.haps_cezasi < 3 AND OyunDurumu.oyuncu_nakit >= 50:
+            RETURN "Hapisten Çıkış Kartı Kullan" VEYA "50 TL Öde"
+        // Çıkış kartını veya parayı sadece tur sonlarına doğru (2. veya 3. tur) kullanmak daha iyidir.
+    
+    // 1.2. İpotek Kaldırma Kontrolü
+    ipotekli_emlaklar = FILTRELE(OyunDurumu.oyuncu_varliklar, ipotekli == TRUE)
+    IF ipotekli_emlaklar.BOYUT > 0 AND OyunDurumu.oyuncu_nakit > 200:
+        // En yüksek kira potansiyeli olanı seç ve ipoteği kaldır (Maliyet: %10 daha fazla)
+        en_iyi_ipotekli = EN_COK(ipotekli_emlaklar, kriter: RantDegeriHesapla)
+        IF OyunDurumu.oyuncu_nakit >= en_iyi_ipotekli.ipotek_bedeli * 1.1:
+            RETURN "İpotek Kaldır: " + en_iyi_ipotekli.isim
+
+    // 1.3. Gelişim Kontrolü (Ev/Otel İnşaatı)
+    IF OyunDurumu.sira_no > 10 AND OyunDurumu.oyuncu_nakit >= 300: // Oyun ilerlemeli
+        // Tam set olan ve gelişimi olmayan emlakları bul
+        aday_setler = FILTRELE(OyunDurumu.aktif_rengi, gelisim_seviyesi < 5)
+        
+        IF aday_setler.BOYUT > 0:
+            // En iyi aday: Rant/Maliyet oranı en yüksek olanı seç (Kırmızı ve Turuncu setler genellikle en iyidir)
+            en_iyi_gelisim_adayi = EN_COK(aday_setler, kriter: RantDegeriHesapla / emlak.ev_maliyeti)
+            
+            // Unutma: Gelişimler eşit yapılmalıdır.
+            IF OyunDurumu.oyuncu_nakit >= en_iyi_gelisim_adayi.ev_maliyeti:
+                RETURN "Ev İnşa Et: " + en_iyi_gelisim_adayi.isim
+    
+    // -----------------------------------------------------------
+    // AŞAMA 2: ZAR AT VE YENİ KONUMA GİT
+    // -----------------------------------------------------------
+    
+    // ... Zar atılır ve yeni konum belirlenir ...
+    yeni_konum_emlak = EMLAK_BUL(yeni_konum)
+    
+    // -----------------------------------------------------------
+    // AŞAMA 3: YENİ KONUMDAKİ KARARLAR
+    // -----------------------------------------------------------
+    
+    IF yeni_konum_emlak.sahip == NULL:
+        // 3.1. Satın Alma Kararı
+        satın_alma_maliyeti = yeni_konum_emlak.fiyat
+        
+        // Karar Sezgiseli: Bütçenin %50'sinden fazlasını harcamamayı dene.
+        IF OyunDurumu.oyuncu_nakit - satın_alma_maliyeti >= (OyunDurumu.oyuncu_nakit * 0.5):
+            
+            // Eğer emlak tam set yapmaya olanak tanıyorsa, öncelik ver.
+            // Önemli renkler: Turuncu, Kırmızı, Sarı (Rakibin en çok düştüğü yerler)
+            IF yeni_konum_emlak.renk_grubu IN ["Turuncu", "Kırmızı", "Sarı"] VEYA EMLAK_TAMAMLIYOR_MU(yeni_konum_emlak):
+                 RETURN "Satın Al: " + yeni_konum_emlak.isim
+            
+            // Genel olarak, nakit rezervini korumak için daha temkinli ol.
+            ELSE IF satın_alma_maliyeti <= 150: // Ucuz emlakları al.
+                RETURN "Satın Al: " + yeni_konum_emlak.isim
+            
+            ELSE:
+                RETURN "Açık Artırmaya Gir" // Riskten kaçınmak için
+        
+        ELSE:
+            // Nakit rezervi düşükse açgözlü olma
+            RETURN "Açık Artırmaya Gir"
+            
+    ELSE IF yeni_konum_emlak.sahip != OYUNCU_ADI:
+        // 3.2. Kira Ödeme
+        // Zorunlu eylem, ödeme yapılır.
+        RETURN "Kira Öde: " + RantDegeriHesapla(yeni_konum_emlak)
+    
+    ELSE:
+        // 3.3. Kendi Emlağına Düştü (Eylem Gerekmez)
+        RETURN "Hamleyi Bitir"
+
+    // -----------------------------------------------------------
+    // AŞAMA 4: DİĞER EYLEMLER (Opsiyonel)
+    // -----------------------------------------------------------
+
+    // 4.1. Ticaret Teklifi
+    // Yüksek öncelikli: Kendi tam setini tamamlamak veya rakibin kilit setini bozmak.
+    IF OYUNCU_TAMAMLAYABİLİR_Mİ() VEYA RAKİBİN_KİLİT_SETİNİ_BOZABİLİR_Mİ():
+        RETURN "Ticaret Teklif Et"
+        
+    RETURN "Hamleyi Bitir"
