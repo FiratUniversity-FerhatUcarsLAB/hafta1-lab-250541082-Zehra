@@ -1,4 +1,44 @@
-Öğrenci No:
-AD-SOYAD:
-
+Öğrenci No:250541082
+AD-SOYAD:Zehra ÖZDEMİR
+Kaynak: Gemini'den yardım alınmıştır.
 Lütfen seçtiğiniz algoritmaya ait çözümü ve diğer isterleri aşağıya ekleyiniz:
+FUNCTION AlfabetikDuzenle(Rehber):
+    
+    N = Rehber.UZUNLUK // Listedeki toplam kayıt sayısı
+    
+    // Dış Döngü: Listenin her bir elemanı için çalışır. 
+    // i, şu an doğru konumuna yerleştirilmesi gereken elemanın indeksidir.
+    FOR i = 0 TO N - 2 DO
+        
+        // Başlangıçta, i. elemanı en küçük kabul et.
+        min_indeks = i 
+        
+        // İç Döngü: Listenin kalan kısmında (i'den sonrası) gerçek en küçük elemanı arar.
+        FOR j = i + 1 TO N - 1 DO
+            
+            // Karşılaştırma: Mevcut en küçük ad (min_indeks) ile j. adı karşılaştır.
+            // Karşılaştırma STRING değerlerini alfabetik olarak yapar (A < B).
+            IF Rehber[j].ad_soyad < Rehber[min_indeks].ad_soyad THEN
+                // Yeni en küçük eleman bulundu.
+                min_indeks = j
+            END IF
+            
+        END FOR
+        
+        // Döngü bittiğinde, min_indeks listenin kalanındaki en küçük elemanın yeridir.
+        // O elemanı, doğru konumu olan i. indekse yerleştirmek için yer değiştirme (swap) yapılır.
+        
+        // Geçici bir değişkende i. elemanı tut.
+        GECICI = Rehber[i]
+        
+        // En küçük elemanı i. konuma taşı.
+        Rehber[i] = Rehber[min_indeks]
+        
+        // Geçiciyi (i. konumdaki eski elemanı) min_indeks'in eski yerine koy.
+        Rehber[min_indeks] = GECICI
+        
+    END FOR
+    
+    RETURN Rehber // Artık alfabetik olarak düzenlenmiş liste
+    
+END FUNCTION
